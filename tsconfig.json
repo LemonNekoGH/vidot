@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+    "customConditions": ["node"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "types": [
@@ -14,6 +15,8 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "src/test.d.ts"
+    "src/godot.ts",
+    "src/index.ts",
+    "src/test.ts"
   ]
 }
