@@ -20,16 +20,19 @@
     "typecheck": "tsc -p tsconfig.json && tsc -p runtime/tsconfig.json && tsc -p examples/basic-vidot/tsconfig.godot.json && tsc -p examples/basic-vidot/tsconfig.node.json",
     "lint": "eslint ."
   },
+  "peerDependencies": {
+    "typescript-to-gdscript": "^0.1.5"
+  },
   "dependencies": {
     "@vitest/runner": "4.1.10",
     "execa": "^10.0.1",
     "typescript": "^5.9.3",
-    "typescript-to-gdscript": "github:LemonNekoGH/typescript-to-gdscript#78058f173ef8d38949532037998b3c86407eec7d",
     "vitest": "4.1.10"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.4.2",
     "@types/node": "^24.13.3",
-    "eslint": "^10.0.0"
+    "eslint": "^10.0.0",
+    "typescript-to-gdscript": "github:LemonNekoGH/typescript-to-gdscript#78058f173ef8d38949532037998b3c86407eec7d"
   }
 }
