@@ -42,7 +42,7 @@ jobs:
 
       - name: Set Godot executable
         run: |
-          godot_bin="$(command -v godot)"
+          godot_bin="$(find "$(mise where godot)" -maxdepth 1 -type f -name 'Godot_*' -print -quit)"
           test -x "$godot_bin"
           echo "GODOT_BIN=$godot_bin" >> "$GITHUB_ENV"
 
