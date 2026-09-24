@@ -12,7 +12,7 @@ import type {
   ViDotEvent,
   ViDotSuiteNode,
   ViDotTaskNode,
-} from './types.ts'
+} from './types.js'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
@@ -20,7 +20,7 @@ import { createInterface } from 'node:readline'
 import { createFileTask, hasFailed } from '@vitest/runner/utils'
 
 import { execa } from 'execa'
-import { compileTestFile } from './compiler.ts'
+import { compileTestFile } from './compiler.js'
 
 const EVENT_PREFIX = 'VIDOT '
 const activeCancellations = new Set<() => void>()

@@ -13,8 +13,8 @@ mise run setup
 mise run test
 ```
 
-The package runner is authored in TypeScript, generated during `build`, and
-committed for Git-based consumers. See [the ViDot guide](docs/vidot.md) for the
+The Godot runner and Node adapter are authored in TypeScript. `build` generates
+GDScript and JavaScript, both committed for Git-based consumers. See [the ViDot guide](docs/vidot.md) for the
 current API and configuration.
 
 ViDot expects each runtime-imported Godot package to be a built tstogd library.

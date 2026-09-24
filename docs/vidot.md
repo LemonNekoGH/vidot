@@ -67,8 +67,8 @@ wrapper and its value-imported modules in that TypeScript program.
 ## Build and Compilation
 
 The runner source is `runtime/src/runner.ts`. The package build converts it to
-`runtime/runner.gd`; this generated GDScript is tracked so Git consumers receive
-the runner. Build it before creating a package release. Tests use the packaged
+`runtime/runner.gd` and compiles the Node adapter to `dist/`. Both outputs are
+tracked so Git consumers receive executable files. Build it before creating a package release. Tests use the packaged
 runner rather than compiling it during a run.
 
 Godot-facing dependencies are tstogd libraries. Each library sets `lib: true`,

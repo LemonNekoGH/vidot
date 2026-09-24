@@ -7,18 +7,21 @@
   "exports": {
     ".": {
       "godot": "./src/godot.ts",
-      "node": "./src/node.ts"
+      "node": "./dist/node.js"
     }
   },
   "files": [
+    "dist",
     "runtime/runner.gd",
     "src"
   ],
   "scripts": {
-    "build": "cd runtime && tstogd convert --godot-path \"$GODOT_BIN\" --project-root ../examples/basic-vidot",
+    "build": "pnpm run build:node && pnpm run build:godot",
     "test": "pnpm run build && cd examples/basic-vidot && tstogd convert --godot-path \"$GODOT_BIN\" --tsconfig tsconfig.godot.json && vitest run --config vitest.config.ts",
     "typecheck": "tsc -p tsconfig.json && tsc -p runtime/tsconfig.json && tsc -p examples/basic-vidot/tsconfig.godot.json && tsc -p examples/basic-vidot/tsconfig.node.json",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build:node": "tsc -p tsconfig.build.json",
+    "build:godot": "cd runtime && tstogd convert --godot-path \"$GODOT_BIN\" --project-root ../examples/basic-vidot"
   },
   "peerDependencies": {
     "typescript-to-gdscript": "^0.1.5"

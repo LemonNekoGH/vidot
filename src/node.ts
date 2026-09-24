@@ -1,17 +1,17 @@
 import type { PoolRunnerInitializer } from 'vitest/node'
 
-import type { ViDotOptions } from './types.ts'
+import type { ViDotOptions } from './types.js'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { ViDotPoolWorker } from './pool.ts'
+import { ViDotPoolWorker } from './pool.js'
 
 export type {
   ViDotLaunch,
   ViDotLaunchContext,
   ViDotLaunchOptions,
   ViDotOptions,
-} from './types.ts'
+} from './types.js'
 
 export function vidot(options: ViDotOptions): PoolRunnerInitializer {
   const resolved = {

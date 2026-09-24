@@ -4,11 +4,11 @@ import type {
   WorkerRequest,
 } from 'vitest/node'
 
-import type { ResolvedViDotOptions } from './types.ts'
+import type { ResolvedViDotOptions } from './types.js'
 import { EventEmitter } from 'node:events'
 
 import { init } from 'vitest/worker'
-import { runViDot } from './worker.ts'
+import { runViDot } from './worker.js'
 
 type MessageListener = (message: unknown) => void
 
