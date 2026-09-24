@@ -1,5 +1,5 @@
 {
-  "name": "@vidot/vitest",
+  "name": "vidot",
   "type": "module",
   "version": "0.1.0",
   "packageManager": "pnpm@11.21.0",

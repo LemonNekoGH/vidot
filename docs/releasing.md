@@ -1,4 +1,4 @@
-# Publish `@vidot/vitest`
+# Publish `vidot`
 
 The [CI workflow](../.github/workflows/ci.yml) runs the repository checks on pull requests and changes to `main`.
 The [npm workflow](../.github/workflows/npm-publish.yml) runs the same checks for each `v*` tag.
@@ -7,7 +7,8 @@ It publishes the package when npm does not have the tagged version.
 ## First release
 
 The first release needs a manual npm publish. npm lets you add a trusted publisher after the package exists.
-An npm account with publish access to the `@vidot` scope must do this step.
+An npm account must publish `vidot` before the GitHub Actions trusted publisher
+can be added.
 
 1. Merge the release changes into `main` and wait for CI to pass.
 2. Check out that commit in a clean working tree.
@@ -25,7 +26,7 @@ An npm account with publish access to the `@vidot` scope must do this step.
    mise x -- npm pack --dry-run
    ```
 
-5. Make sure that the npm account can publish packages in the `@vidot` scope.
+5. Confirm that `vidot` is available on npm and that the npm account is logged in.
 6. Publish version `0.1.0` from the repository root:
 
    ```sh
@@ -33,10 +34,10 @@ An npm account with publish access to the `@vidot` scope must do this step.
    mise x -- npm publish
    ```
 
-7. Add a GitHub Actions trusted publisher for `@vidot/vitest`:
+7. Add a GitHub Actions trusted publisher for `vidot`:
 
    ```sh
-   mise x -- npm trust github @vidot/vitest --repo LemonNekoGH/vidot --file npm-publish.yml --allow-publish
+   mise x -- npm trust github vidot --repo LemonNekoGH/vidot --file npm-publish.yml --allow-publish
    ```
 
    If you use the npm website, enter these exact values:

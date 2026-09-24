@@ -1,4 +1,4 @@
-import { vidot } from '@vidot/vitest'
+import { vidot } from 'vidot'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({

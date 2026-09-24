@@ -12,7 +12,7 @@ export interface CompileTestFileOptions {
 }
 
 const TEST_FILE_EXTENSION = /\.[cm]?tsx?$/
-const TEST_API_MODULE = '@vidot/vitest'
+const TEST_API_MODULE = 'vidot'
 const TSTOGD_CONFIG = 'tstogd.json'
 const REGISTRATION_API_NAMES: readonly string[] = [
   'afterAll',
