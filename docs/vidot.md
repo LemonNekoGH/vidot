@@ -1,0 +1,124 @@
+# ViDot
+
+ViDot runs Vitest-shaped TypeScript tests inside Godot. The current proof uses
+an editable Godot project and is exercised by `mise run test`.
+
+## Current Flow
+
+```mermaid
+flowchart LR
+  vitest[Vitest] --> pool[ViDot custom pool]
+  pool --> compile[Compile test modules with tstogd]
+  compile --> godot[One Godot process]
+  godot -->|collect and execute tests| events[Structured result events]
+  events --> vitest
+```
+
+Vitest discovers candidate files and owns reporting. Node.js compiles those
+files and launches Godot, but does not evaluate them or construct their test
+trees. The Godot runner loads each generated module, builds the authoritative
+tree from its registration calls, and executes the files sequentially.
+
+Vitest's `-t`/`testNamePattern` filter is passed to the Godot runner before
+collection. After collection, Godot uses its PCRE2-backed `RegEx` to mark
+nonmatching tests and suites as skipped before any test or hook executes.
+
+The runner starts against the configured editable project, so the project's
+settings and Autoloads are available. It replaces the normal main-scene entry
+and begins collection after the first frame.
+
+Fixtures that need a complete game session may add its root node to the
+`vidot-persistent-game` group. The runner preserves that explicit node between
+tests; fixtures must use the game's own restart API to begin the next session.
+
+## Configuration
+
+```ts
+import { vidot } from '@vidot/vitest'
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    fileParallelism: false,
+    isolate: false,
+    pool: vidot({ projectPath: './path/to/project' }),
+  },
+})
+```
+
+`godotPath` may be supplied to `vidot`; otherwise it resolves from `GODOT_BIN`
+and then `godot`. Wrappers may supply a `launch` callback to add generic Godot
+arguments, environment variables, and before/after process hooks; ordinary
+ViDot use defaults to headless execution.
+
+Vitest and `@vitest/runner` are pinned to 4.1.10 because the custom-pool API is
+experimental. The tested Godot API baseline is 4.3.
+
+Each project using ViDot has a root `tsconfig.json` solution that references
+separate `tsconfig.node.json` and `tsconfig.godot.json` programs. The Node
+program sets `customConditions: ["node"]` and includes the Vitest
+configuration; the Godot program sets `customConditions: ["godot"]`, includes
+tstogd's Godot typings, and includes the test sources. Both import
+`@vidot/vitest`; conditional exports select the runtime-appropriate
+implementation. For each test file, ViDot finds the nearest
+`tsconfig.godot.json` from its source directory and compiles the generated test
+wrapper and its value-imported modules in that TypeScript program.
+
+## Build and Compilation
+
+The runner source is `runtime/src/runner.ts`. The package build converts it to
+`runtime/runner.gd`; this generated GDScript is tracked so Git consumers receive
+the runner. Build it before creating a package release. Tests use the packaged
+runner rather than compiling it during a run.
+
+Godot-facing dependencies are tstogd libraries. Each library sets `lib: true`,
+builds its own GDScript before Vitest starts, and declares its shared-package
+dependencies in `package.json`. ViDot writes one temporary class-shaped wrapper
+for each test module and runs `tstogd convert` on that wrapper. tstogd follows
+declared dependencies transitively and links each library into the editable
+Godot project under `tstogd_modules`, so wrapper preloads and library-to-library
+preloads resolve through fixed `res://tstogd_modules/<package-name>/...` paths.
+
+A test module is adapted only where tstogd requires it:
+
+- module-level executable statements are placed in a generated
+  `vidot_collect(api)` method;
+- every name from `@vidot/vitest` is bound to a Godot Callable while
+  the original calls remain unchanged.
+
+The retained authoring import emits no GDScript. All other supported syntax and
+behavior comes from tstogd. ViDot does not rewrite assertions or helper control
+flow.
+
+## Current Test API
+
+The current runner implements:
+
+- `describe` and `test`;
+- `beforeAll`, `beforeEach`, `afterEach`, and `afterAll`;
+- `expect(...).toBe(...)` and `expect(...).toEqual(...)`;
+- synchronous and asynchronous callbacks;
+- a callback context containing the real Godot `SceneTree` as `tree`;
+- `instantiate(path)` for instantiating an external GDScript file;
+- `waitUntil(predicate, timeoutMs)` for frame-driven bounded waits.
+
+`instantiate` records an assertion failure and returns `null` when the
+script cannot be read, compiled, or instantiated. `waitUntil` evaluates the
+predicate once per process frame and returns its final boolean state at the
+deadline.
+
+Matchers record failures and return a boolean. They do not stop the callback.
+Tests that need fail-fast behavior use ordinary control flow:
+
+```ts
+test('example', () => {
+  if (!expect(actual).toBe(expected))
+    return
+
+  continueTest()
+})
+```
+
+Godot sends collected trees and results as structured stdout events. The Node.js
+adapter rehydrates those records and uses Vitest's worker reporting channel;
+Godot does not implement the Vitest worker protocol.

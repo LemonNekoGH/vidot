@@ -154,44 +154,6 @@ function transformTestModule(sourcePath: string, source: string): string {
   )
   const factory = ts.factory
 
-  const lowerStatements = (statements: readonly ts.Statement[]): ts.Statement[] =>
-    statements.flatMap((statement) => {
-      const registration = readRegistration(statement)
-      if (registration) {
-        const callbackName = factory.createUniqueName('_vidotCallback')
-        const callback = factory.updateArrowFunction(
-          registration.callback,
-          registration.callback.modifiers,
-          registration.callback.typeParameters,
-          registration.callback.parameters,
-          registration.callback.type,
-          registration.callback.equalsGreaterThanToken,
-          factory.updateBlock(
-            registration.body,
-            lowerStatements(registration.body.statements),
-          ),
-        )
-        const declaration = factory.createVariableStatement(
-          undefined,
-          factory.createVariableDeclarationList([
-            factory.createVariableDeclaration(callbackName, undefined, undefined, callback),
-          ], ts.NodeFlags.Const),
-        )
-        const call = factory.updateCallExpression(
-          registration.call,
-          registration.call.expression,
-          registration.call.typeArguments,
-          registration.call.arguments.map((argument, index) =>
-            index === registration.callbackIndex ? callbackName : argument,
-          ),
-        )
-
-        return [declaration, factory.updateExpressionStatement(registration.statement, call)]
-      }
-
-      return [statement]
-    })
-
   const fileStatements: ts.Statement[] = []
   const collectionStatements: ts.Statement[] = []
   for (const statement of sourceFile.statements) {
@@ -203,7 +165,7 @@ function transformTestModule(sourcePath: string, source: string): string {
     if (ts.isImportDeclaration(statement))
       fileStatements.push(rewriteRelativeImport(sourcePath, statement, factory))
     else
-      collectionStatements.push(...lowerStatements([statement]))
+      collectionStatements.push(statement)
   }
 
   const apiBindings = TEST_API_NAMES.map(name => factory.createVariableStatement(
@@ -266,41 +228,6 @@ function rewriteRelativeImport(
     factory.createStringLiteral(resolve(dirname(sourcePath), statement.moduleSpecifier.text)),
     statement.attributes,
   )
-}
-
-function readRegistration(
-  statement: ts.Statement,
-): {
-  call: ts.CallExpression
-  callback: ts.ArrowFunction
-  body: ts.Block
-  callbackIndex: number
-  statement: ts.ExpressionStatement
-} | undefined {
-  if (!ts.isExpressionStatement(statement)
-    || !ts.isCallExpression(statement.expression)
-    || !ts.isIdentifier(statement.expression.expression)) {
-    return undefined
-  }
-
-  const name = statement.expression.expression.text
-  if (!REGISTRATION_API_NAMES.includes(name))
-    return undefined
-
-  const callbackIndex = statement.expression.arguments.findIndex(argument =>
-    ts.isArrowFunction(argument) && ts.isBlock(argument.body),
-  )
-  const callback = statement.expression.arguments[callbackIndex]
-  if (callbackIndex < 0 || !ts.isArrowFunction(callback) || !ts.isBlock(callback.body))
-    return undefined
-
-  return {
-    body: callback.body,
-    call: statement.expression,
-    callback,
-    callbackIndex,
-    statement,
-  }
 }
 
 function createCallableType(factory: ts.NodeFactory): ts.FunctionTypeNode {

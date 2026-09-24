@@ -1,0 +1,8 @@
+{
+  "name": "@vidot/basic-example",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@vidot/vitest": "workspace:*"
+  }
+}

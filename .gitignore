@@ -1,0 +1,8 @@
+node_modules/
+**/node_modules/
+**/.godot/
+**/tstogd_modules/
+**/src/_typings/
+examples/basic-vidot/scripts/
+.DS_Store
+*.uid
