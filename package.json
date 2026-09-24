@@ -3,7 +3,21 @@
   "type": "module",
   "version": "0.1.0",
   "packageManager": "pnpm@11.21.0",
+  "description": "Run Vitest-shaped TypeScript tests inside Godot projects",
+  "license": "MIT",
+  "homepage": "https://github.com/LemonNekoGH/vidot#readme",
   "repository": "https://github.com/LemonNekoGH/vidot",
+  "bugs": "https://github.com/LemonNekoGH/vidot/issues",
+  "keywords": [
+    "godot",
+    "testing",
+    "typescript",
+    "vitest"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "exports": {
     ".": {
       "godot": "./src/godot.ts",
@@ -24,7 +38,7 @@
     "build:godot": "cd runtime && tstogd convert --godot-path \"${GODOT_BIN:-$(command -v godot)}\" --project-root ../examples/basic-vidot"
   },
   "peerDependencies": {
-    "typescript-to-gdscript": "^0.1.5"
+    "typescript-to-gdscript": "^0.1.6"
   },
   "dependencies": {
     "@vitest/runner": "4.1.10",
@@ -36,6 +50,6 @@
     "@antfu/eslint-config": "^7.4.2",
     "@types/node": "^24.13.3",
     "eslint": "^10.0.0",
-    "typescript-to-gdscript": "github:LemonNekoGH/typescript-to-gdscript#78058f173ef8d38949532037998b3c86407eec7d"
+    "typescript-to-gdscript": "^0.1.6"
   }
 }

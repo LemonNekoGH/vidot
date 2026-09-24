@@ -1,0 +1,65 @@
+name: Publish npm Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Verify release tag
+        run: |
+          expected="v$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "$expected" ]; then
+            echo "::error::Release tag must match package version: $expected"
+            exit 1
+          fi
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          if ! git merge-base --is-ancestor HEAD refs/remotes/origin/main; then
+            echo "::error::Release tag must point to a commit on main."
+            exit 1
+          fi
+
+      - uses: jdx/mise-action@v3
+        with:
+          install: true
+          install_args: --locked node pnpm godot
+          cache: true
+
+      - run: mise x -- pnpm install --frozen-lockfile
+      - run: mise run lint
+      - run: mise run typecheck
+      - run: mise run test
+      - name: Check committed build outputs
+        run: git diff --exit-code -- dist runtime/runner.gd
+      - name: Inspect npm package
+        run: mise x -- npm pack --dry-run
+
+      - name: Check whether version is already published
+        id: registry
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "https://registry.npmjs.org/@vidot%2Fvitest/$version")"
+          case "$status" in
+            200) echo 'published=true' >> "$GITHUB_OUTPUT" ;;
+            404) echo 'published=false' >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::npm registry returned HTTP $status"; exit 1 ;;
+          esac
+
+      - name: Publish to npm
+        if: steps.registry.outputs.published == 'false'
+        run: mise x -- npm publish

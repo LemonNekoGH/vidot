@@ -4,6 +4,14 @@
 project. Godot owns collection and execution; Vitest owns file discovery and
 reporting.
 
+Install it in a Godot project with the supported tstogd and Vitest versions:
+
+```sh
+pnpm add -D @vidot/vitest typescript-to-gdscript@^0.1.6 vitest@4.1.10 typescript@^5.9.3
+```
+
+See [the ViDot guide](https://github.com/LemonNekoGH/vidot/blob/main/docs/vidot.md) for the project configuration and test API.
+
 Install the pinned tools and run the repository proof with:
 
 ```bash
@@ -15,8 +23,7 @@ mise run test
 Set `GODOT_BIN` to override the pinned Godot editor when needed.
 
 The Godot runner and Node adapter are authored in TypeScript. `build` generates
-GDScript and JavaScript, both committed for Git-based consumers. See [the ViDot guide](docs/vidot.md) for the
-current API and configuration.
+GDScript and JavaScript, both committed for Git-based consumers.
 
 ViDot expects each runtime-imported Godot package to be a built tstogd library.
 It mounts these libraries under the target project's `tstogd_modules`
@@ -24,3 +31,5 @@ directory before Godot loads a generated test wrapper.
 
 The Godot test context can instantiate external GDScript fixtures and perform
 frame-driven bounded waits; the complete contract is documented there.
+
+See [the release guide](https://github.com/LemonNekoGH/vidot/blob/main/docs/releasing.md) for npm publication steps.

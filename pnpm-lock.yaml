@@ -31,8 +31,8 @@ importers:
         specifier: ^10.0.0
         version: 10.11.0
       typescript-to-gdscript:
-        specifier: github:LemonNekoGH/typescript-to-gdscript#78058f173ef8d38949532037998b3c86407eec7d
-        version: https://codeload.github.com/LemonNekoGH/typescript-to-gdscript/tar.gz/78058f173ef8d38949532037998b3c86407eec7d(typescript@5.9.3)
+        specifier: ^0.1.6
+        version: 0.1.6(typescript@5.9.3)
 
   examples/basic-vidot:
     dependencies:
@@ -1646,9 +1646,8 @@ packages:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
 
-  typescript-to-gdscript@https://codeload.github.com/LemonNekoGH/typescript-to-gdscript/tar.gz/78058f173ef8d38949532037998b3c86407eec7d:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/LemonNekoGH/typescript-to-gdscript/tar.gz/78058f173ef8d38949532037998b3c86407eec7d}
-    version: 0.1.5
+  typescript-to-gdscript@0.1.6:
+    resolution: {integrity: sha512-X+R5KKuaQ9aDFC1p3NlKe8cdAmQ0HEhy7ULhpIm6OkZ9c3M2czhoTaoWbytgc8NohPGIIVrZG6qujw55xBcm9A==}
     engines: {node: '>=22'}
     hasBin: true
     peerDependencies:
@@ -3567,7 +3566,7 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
 
-  typescript-to-gdscript@https://codeload.github.com/LemonNekoGH/typescript-to-gdscript/tar.gz/78058f173ef8d38949532037998b3c86407eec7d(typescript@5.9.3):
+  typescript-to-gdscript@0.1.6(typescript@5.9.3):
     dependencies:
       chokidar: 4.0.3
       commander: 13.1.0

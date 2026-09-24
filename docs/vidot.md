@@ -71,7 +71,7 @@ The runner source is `runtime/src/runner.ts`. The package build converts it to
 tracked so Git consumers receive executable files. Build it before creating a package release. Tests use the packaged
 runner rather than compiling it during a run.
 
-Godot-facing dependencies are tstogd libraries. Each library sets `lib: true`,
+Godot-facing dependencies are tstogd 0.1.6 or later libraries. Each library sets `lib: true`,
 builds its own GDScript before Vitest starts, and declares its shared-package
 dependencies in `package.json`. ViDot writes one temporary class-shaped wrapper
 for each test module and runs `tstogd convert` on that wrapper. tstogd follows
