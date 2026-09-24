@@ -36,7 +36,7 @@ importers:
 
   examples/basic-vidot:
     dependencies:
-      vidot:
+      '@vidot/vitest':
         specifier: workspace:*
         version: link:../..
 

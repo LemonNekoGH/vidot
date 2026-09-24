@@ -1,13 +1,16 @@
 # ViDot
 
-`vidot` runs Vitest-shaped TypeScript tests inside an editable Godot
+`@vidot/vitest` runs Vitest-shaped TypeScript tests inside an editable Godot
 project. Godot owns collection and execution; Vitest owns file discovery and
 reporting.
+
+The package uses a scope because npm rejects the unscoped name `vidot` as too
+similar to the existing package `dot`.
 
 Install it in a Godot project with the supported tstogd and Vitest versions:
 
 ```sh
-pnpm add -D vidot typescript-to-gdscript@^0.1.6 vitest@4.1.10 typescript@^5.9.3
+pnpm add -D @vidot/vitest typescript-to-gdscript@^0.1.6 vitest@4.1.10 typescript@^5.9.3
 ```
 
 See [the ViDot guide](https://github.com/LemonNekoGH/vidot/blob/main/docs/vidot.md) for the project configuration and test API.

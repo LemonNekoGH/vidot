@@ -34,7 +34,7 @@ tests; fixtures must use the game's own restart API to begin the next session.
 ## Configuration
 
 ```ts
-import { vidot } from 'vidot'
+import { vidot } from '@vidot/vitest'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
@@ -59,7 +59,7 @@ separate `tsconfig.node.json` and `tsconfig.godot.json` programs. The Node
 program sets `customConditions: ["node"]` and includes the Vitest
 configuration; the Godot program sets `customConditions: ["godot"]`, includes
 tstogd's Godot typings, and includes the test sources. Both import
-`vidot`; conditional exports select the runtime-appropriate
+`@vidot/vitest`; conditional exports select the runtime-appropriate
 implementation. For each test file, ViDot finds the nearest
 `tsconfig.godot.json` from its source directory and compiles the generated test
 wrapper and its value-imported modules in that TypeScript program.
@@ -84,7 +84,7 @@ A test module is adapted only where tstogd requires it:
 
 - module-level executable statements are placed in a generated
   `vidot_collect(api)` method;
-- every name from `vidot` is bound to a Godot Callable while
+- every name from `@vidot/vitest` is bound to a Godot Callable while
   the original calls remain unchanged.
 
 The retained authoring import emits no GDScript. All other supported syntax and

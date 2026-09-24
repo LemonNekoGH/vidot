@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vidot'
+import { describe, expect, test } from '@vidot/vitest'
 import { _Example } from './src/main.ts'
 
 describe('editable Godot project', () => {

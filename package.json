@@ -1,12 +1,15 @@
 {
-  "name": "vidot",
+  "name": "@vidot/vitest",
   "type": "module",
   "version": "0.1.0",
   "packageManager": "pnpm@11.21.0",
   "description": "Run Vitest-shaped TypeScript tests inside Godot projects",
   "license": "MIT",
   "homepage": "https://github.com/LemonNekoGH/vidot#readme",
-  "repository": "https://github.com/LemonNekoGH/vidot",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LemonNekoGH/vidot.git"
+  },
   "bugs": "https://github.com/LemonNekoGH/vidot/issues",
   "keywords": [
     "godot",
