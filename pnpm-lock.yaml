@@ -4,61 +4,34 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-catalogs:
-  default:
-    '@antfu/eslint-config':
-      specifier: ^7.4.2
-      version: 7.7.3
-    '@types/node':
-      specifier: ^24.13.3
-      version: 24.13.6
-    '@vitest/runner':
-      specifier: 4.1.10
-      version: 4.1.10
-    eslint:
-      specifier: ^10.0.0
-      version: 10.11.0
-    execa:
-      specifier: ^10.0.1
-      version: 10.0.1
-    typescript:
-      specifier: ^5.9.3
-      version: 5.9.3
-    typescript-to-gdscript:
-      specifier: github:LemonNekoGH/typescript-to-gdscript#78058f173ef8d38949532037998b3c86407eec7d
-      version: 0.1.5
-    vitest:
-      specifier: 4.1.10
-      version: 4.1.10
-
 importers:
 
   .:
     dependencies:
       '@vitest/runner':
-        specifier: 'catalog:'
+        specifier: 4.1.10
         version: 4.1.10
       execa:
-        specifier: 'catalog:'
+        specifier: ^10.0.1
         version: 10.0.1
       typescript:
-        specifier: 'catalog:'
+        specifier: ^5.9.3
         version: 5.9.3
       typescript-to-gdscript:
-        specifier: 'catalog:'
+        specifier: github:LemonNekoGH/typescript-to-gdscript#78058f173ef8d38949532037998b3c86407eec7d
         version: https://codeload.github.com/LemonNekoGH/typescript-to-gdscript/tar.gz/78058f173ef8d38949532037998b3c86407eec7d(typescript@5.9.3)
       vitest:
-        specifier: 'catalog:'
+        specifier: 4.1.10
         version: 4.1.10(@types/node@24.13.6)(vite@8.3.0(@types/node@24.13.6)(yaml@2.9.1))
     devDependencies:
       '@antfu/eslint-config':
-        specifier: 'catalog:'
+        specifier: ^7.4.2
         version: 7.7.3(@typescript-eslint/typescript-estree@8.70.1(typescript@5.9.3))(@typescript-eslint/utils@8.70.1(eslint@10.11.0)(typescript@5.9.3))(@vue/compiler-sfc@3.5.43)(eslint@10.11.0)(typescript@5.9.3)(vitest@4.1.10(@types/node@24.13.6)(vite@8.3.0(@types/node@24.13.6)(yaml@2.9.1)))
       '@types/node':
-        specifier: 'catalog:'
+        specifier: ^24.13.3
         version: 24.13.6
       eslint:
-        specifier: 'catalog:'
+        specifier: ^10.0.0
         version: 10.11.0
 
   examples/basic-vidot:

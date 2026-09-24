@@ -21,15 +21,15 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@vitest/runner": "catalog:",
-    "execa": "catalog:",
-    "typescript": "catalog:",
-    "typescript-to-gdscript": "catalog:",
-    "vitest": "catalog:"
+    "@vitest/runner": "4.1.10",
+    "execa": "^10.0.1",
+    "typescript": "^5.9.3",
+    "typescript-to-gdscript": "github:LemonNekoGH/typescript-to-gdscript#78058f173ef8d38949532037998b3c86407eec7d",
+    "vitest": "4.1.10"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "catalog:",
-    "@types/node": "catalog:",
-    "eslint": "catalog:"
+    "@antfu/eslint-config": "^7.4.2",
+    "@types/node": "^24.13.3",
+    "eslint": "^10.0.0"
   }
 }
