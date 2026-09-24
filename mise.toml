@@ -5,11 +5,11 @@ activate_aggressive = true
 lockfile = true
 
 
-[tool_alias]
-godot = "aqua:godotengine/godot"
+[plugins]
+godot = "https://github.com/LemonNekoGH/vfox-godot.git#dd88823451008524efde019c61e222b8dbbf8f62"
 
 [tools]
-godot = "4.3-stable"
+godot = "4.7.2-stable"
 node = "24.18.0"
 pnpm = "11.21.0"
 

@@ -42,7 +42,7 @@ jobs:
 
       - name: Set Godot executable
         run: |
-          godot_bin="$(find "$(mise where godot)" -maxdepth 1 -type f -name 'Godot_*' -print -quit)"
+          godot_bin="$(command -v godot)"
           test -x "$godot_bin"
           echo "GODOT_BIN=$godot_bin" >> "$GITHUB_ENV"
 
@@ -50,8 +50,8 @@ jobs:
       - run: mise run lint
       - run: mise run typecheck
       - run: mise run test
-      - name: Check committed build outputs
-        run: git diff --exit-code -- dist runtime/runner.gd
+      - name: Check committed Godot runner
+        run: git diff --exit-code -- runtime/runner.gd
       - name: Inspect npm package
         run: mise x -- npm pack --dry-run
 

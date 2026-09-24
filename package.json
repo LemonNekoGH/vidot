@@ -30,9 +30,10 @@
     "src"
   ],
   "scripts": {
+    "prepare": "tsc -p tsconfig.build.json",
     "build": "pnpm run build:node && pnpm run build:godot",
     "test": "pnpm run build && cd examples/basic-vidot && tstogd convert --godot-path \"${GODOT_BIN:-$(command -v godot)}\" --tsconfig tsconfig.godot.json && vitest run --config vitest.config.ts",
-    "typecheck": "tsc -p tsconfig.json && tsc -p runtime/tsconfig.json && tsc -p examples/basic-vidot/tsconfig.godot.json && tsc -p examples/basic-vidot/tsconfig.node.json",
+    "typecheck": "pnpm run build:node && tsc -p tsconfig.json && tsc -p runtime/tsconfig.json && tsc -p examples/basic-vidot/tsconfig.godot.json && tsc -p examples/basic-vidot/tsconfig.node.json",
     "lint": "eslint .",
     "build:node": "tsc -p tsconfig.build.json",
     "build:godot": "cd runtime && tstogd convert --godot-path \"${GODOT_BIN:-$(command -v godot)}\" --project-root ../examples/basic-vidot"
