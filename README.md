@@ -4,14 +4,15 @@
 project. Godot owns collection and execution; Vitest owns file discovery and
 reporting.
 
-Install pinned tools, set `GODOT_BIN` to a Godot 4.3-compatible editor, and run
-the repository proof with:
+Install the pinned tools and run the repository proof with:
 
 ```bash
 mise install
 mise run setup
 mise run test
 ```
+
+Set `GODOT_BIN` to override the pinned Godot editor when needed.
 
 The Godot runner and Node adapter are authored in TypeScript. `build` generates
 GDScript and JavaScript, both committed for Git-based consumers. See [the ViDot guide](docs/vidot.md) for the
