@@ -204,6 +204,7 @@ func _run_test(task, lineage: Array):
 	for index in range(lineage.size() - 1, -1, -1):
 		await self._run_callbacks(lineage[index].get("after_each"), context)
 	root.queue_free()
+	await root.tree_exited
 	await self.process_frame
 	var event = {
 		"type": "test_finish",

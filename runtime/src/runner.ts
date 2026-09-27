@@ -299,6 +299,7 @@ export class _Runner extends SceneTree {
       await this._run_callbacks(lineage[index].after_each, context)
 
     root.queue_free()
+    await root.tree_exited
     await this.process_frame
     const event: EventData = {
       type: 'test_finish',
