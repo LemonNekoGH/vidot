@@ -1,5 +1,6 @@
 export interface TestContext {
   tree: SceneTree
+  root: Node | null
   instantiate: <T extends GodotObject>(path: string) => T | null
   waitUntil: (predicate: () => boolean, timeoutMs: int) => Promise<boolean>
 }

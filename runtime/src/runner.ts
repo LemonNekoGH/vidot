@@ -38,7 +38,6 @@ interface TestNamePattern extends GodotObject {
 }
 
 export class _Runner extends SceneTree {
-  tree!: SceneTree
   private _collect_only = false
   private _argument_error = ''
   private _files: Array<TestFile> = []
@@ -50,10 +49,8 @@ export class _Runner extends SceneTree {
   private _next_task_id: int = 1
   private _active_errors: Array<EventData> = []
   private _file_errors: Array<EventData> = []
-  private _baseline_nodes: Dictionary<int, bool> = {}
 
   _initialize(): void {
-    this.tree = this
     this.process_frame.connect(this._run)
   }
 
@@ -67,9 +64,6 @@ export class _Runner extends SceneTree {
       return
     }
 
-    for (const child of this.root.get_children())
-      this._baseline_nodes[child.get_instance_id()] = true
-
     for (const file of this._files) {
       const started_at = Time.get_ticks_msec()
       if (!this._collect(file)) {
@@ -80,7 +74,6 @@ export class _Runner extends SceneTree {
 
       if (!this._collect_only) {
         await this._run_suite(this._root_task, [])
-        await this._cleanup_test_nodes()
         this._emit_file_finish(started_at)
       }
 
@@ -292,16 +285,21 @@ export class _Runner extends SceneTree {
     const started_at = Time.get_ticks_msec()
     this._active_errors = []
     this._emit({ type: 'test_start', file: this._current_file, id: task.id })
+    const root = new Node()
+    this.root.add_child(root)
+    const context = _Runner.Context.create(this, root)
+
     for (const suite of lineage)
-      await this._run_callbacks(suite.before_each)
+      await this._run_callbacks(suite.before_each, context)
 
     if (this._active_errors.is_empty())
-      await this._run_callback(task.callback)
+      await this._run_callback(task.callback, context)
 
     for (const index of range(lineage.size() - 1, -1, -1))
-      await this._run_callbacks(lineage[index].after_each)
+      await this._run_callbacks(lineage[index].after_each, context)
 
-    await this._cleanup_test_nodes()
+    root.queue_free()
+    await this.process_frame
     const event: EventData = {
       type: 'test_finish',
       file: this._current_file,
@@ -315,38 +313,31 @@ export class _Runner extends SceneTree {
     this._emit(event)
   }
 
-  private async _run_callbacks(callbacks: Array<Callable>): Promise<void> {
+  private async _run_callbacks(
+    callbacks: Array<Callable>,
+    context: _Runner.Context,
+  ): Promise<void> {
     for (const callback of callbacks)
-      await this._run_callback(callback)
+      await this._run_callback(callback, context)
   }
 
-  private async _run_callback(callback: Callable): Promise<void> {
+  private async _run_callback(
+    callback: Callable,
+    context: _Runner.Context,
+  ): Promise<void> {
     if (callback.get_argument_count() === 0) {
       await callback.call()
 
       return
     }
 
-    await callback.call(this)
+    await callback.call(context)
   }
 
   private async _run_file_hooks(callbacks: Array<Callable>): Promise<void> {
     this._active_errors = []
-    await this._run_callbacks(callbacks)
+    await this._run_callbacks(callbacks, _Runner.Context.create(this, null))
     this._file_errors.append_array(this._active_errors)
-  }
-
-  private async _cleanup_test_nodes(): Promise<void> {
-    let queued = false
-    for (const child of this.root.get_children()) {
-      if (!this._baseline_nodes.has(child.get_instance_id()) && !child.is_in_group('vidot-persistent-game')) {
-        child.queue_free()
-        queued = true
-      }
-    }
-
-    if (queued)
-      await this.process_frame
   }
 
   private _new_suite(name: string): SuiteTask {
@@ -448,6 +439,32 @@ export class _Runner extends SceneTree {
 // eslint-disable-next-line ts/no-namespace
 export namespace _Runner {
   export const EVENT_PREFIX = 'VIDOT '
+
+  export class Context extends RefCounted {
+    tree!: SceneTree
+    root: Node | null = null
+    private _runner!: TSOnly<_Runner>
+
+    static create(
+      runner: TSOnly<_Runner>,
+      root: Node | null,
+    ): Context {
+      const context = new Context()
+      context.tree = runner
+      context.root = root
+      context._runner = runner
+
+      return context
+    }
+
+    instantiate(path: string): unknown {
+      return this._runner.instantiate(path)
+    }
+
+    async waitUntil(predicate: Callable, timeoutMs: int): Promise<bool> {
+      return await this._runner.waitUntil(predicate, timeoutMs)
+    }
+  }
 
   export class Expectation extends RefCounted {
     private _runner!: TSOnly<_Runner>

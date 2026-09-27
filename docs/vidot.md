@@ -27,9 +27,10 @@ The runner starts against the configured editable project, so the project's
 settings and Autoloads are available. It replaces the normal main-scene entry
 and begins collection after the first frame.
 
-Fixtures that need a complete game session may add its root node to the
-`vidot-persistent-game` group. The runner preserves that explicit node between
-tests; fixtures must use the game's own restart API to begin the next session.
+The runner creates one scene-tree root for each test. Tests add their fixtures
+and other test-owned nodes below that root. The runner frees the complete root
+after `afterEach` hooks finish and before it reports the test result. Process-wide
+nodes stay outside the test root and retain their own lifecycle.
 
 ## Configuration
 
@@ -100,6 +101,7 @@ The current runner implements:
 - `expect(...).toBe(...)` and `expect(...).toEqual(...)`;
 - synchronous and asynchronous callbacks;
 - a callback context containing the real Godot `SceneTree` as `tree`;
+- a test-owned `root` node for test callbacks and `beforeEach`/`afterEach` hooks;
 - `instantiate(path)` for instantiating an external GDScript file;
 - `waitUntil(predicate, timeoutMs)` for frame-driven bounded waits.
 
@@ -107,6 +109,12 @@ The current runner implements:
 script cannot be read, compiled, or instantiated. `waitUntil` evaluates the
 predicate once per process frame and returns its final boolean state at the
 deadline.
+
+Each running test and its `beforeEach` and `afterEach` hooks share one context.
+Tests must add test-owned nodes below `context.root`; they must not free or
+reparent the root itself. `beforeAll` and `afterAll` receive the same context
+shape with `root` set to `null`. The `tree` field remains available for
+scene-tree services and process-wide nodes.
 
 Matchers record failures and return a boolean. They do not stop the callback.
 Tests that need fail-fast behavior use ordinary control flow:

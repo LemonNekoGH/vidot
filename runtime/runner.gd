@@ -1,6 +1,5 @@
 extends SceneTree
 
-var tree: SceneTree
 var _collect_only = false
 var _argument_error = ""
 var _files: Array = []
@@ -12,10 +11,8 @@ var _suite_stack: Array = []
 var _next_task_id: int = 1
 var _active_errors: Array = []
 var _file_errors: Array = []
-var _baseline_nodes: Dictionary = {}
 
 func _initialize() -> void:
-	self.tree = self
 	self.process_frame.connect(self._run)
 
 func _run():
@@ -28,8 +25,6 @@ func _run():
 		})
 		self.quit()
 		return
-	for child in self.root.get_children():
-		self._baseline_nodes[child.get_instance_id()] = true
 	for file in self._files:
 		var started_at = Time.get_ticks_msec()
 		if not self._collect(file):
@@ -37,7 +32,6 @@ func _run():
 			continue
 		if not self._collect_only:
 			await self._run_suite(self._root_task, [])
-			await self._cleanup_test_nodes()
 			self._emit_file_finish(started_at)
 		self._current_module = null
 		self._root_task.clear()
@@ -200,13 +194,17 @@ func _run_test(task, lineage: Array):
 		"file": self._current_file,
 		"id": task.get("id"),
 	})
+	var root = Node.new()
+	self.root.add_child(root)
+	var context = self.Context.create(self, root)
 	for suite in lineage:
-		await self._run_callbacks(suite.get("before_each"))
+		await self._run_callbacks(suite.get("before_each"), context)
 	if self._active_errors.is_empty():
-		await self._run_callback(task.get("callback"))
+		await self._run_callback(task.get("callback"), context)
 	for index in range(lineage.size() - 1, -1, -1):
-		await self._run_callbacks(lineage[index].get("after_each"))
-	await self._cleanup_test_nodes()
+		await self._run_callbacks(lineage[index].get("after_each"), context)
+	root.queue_free()
+	await self.process_frame
 	var event = {
 		"type": "test_finish",
 		"file": self._current_file,
@@ -218,29 +216,20 @@ func _run_test(task, lineage: Array):
 		event.errors = self._active_errors
 	self._emit(event)
 
-func _run_callbacks(callbacks: Array):
+func _run_callbacks(callbacks: Array, context: Context):
 	for callback in callbacks:
-		await self._run_callback(callback)
+		await self._run_callback(callback, context)
 
-func _run_callback(callback: Callable):
+func _run_callback(callback: Callable, context: Context):
 	if callback.get_argument_count() == 0:
 		await callback.call()
 		return
-	await callback.call(self)
+	await callback.call(context)
 
 func _run_file_hooks(callbacks: Array):
 	self._active_errors = []
-	await self._run_callbacks(callbacks)
+	await self._run_callbacks(callbacks, self.Context.create(self, null))
 	self._file_errors.append_array(self._active_errors)
-
-func _cleanup_test_nodes():
-	var queued = false
-	for child in self.root.get_children():
-		if not self._baseline_nodes.has(child.get_instance_id()) and not child.is_in_group("vidot-persistent-game"):
-			child.queue_free()
-			queued = true
-	if queued:
-		await self.process_frame
 
 func _new_suite(name: String):
 	return {
@@ -313,6 +302,24 @@ func _emit(event) -> void:
 	print(self.EVENT_PREFIX + JSON.stringify(event))
 
 const EVENT_PREFIX = "VIDOT "
+
+class Context extends RefCounted:
+	var tree: SceneTree
+	var root: Node = null
+	var _runner
+
+	static func create(runner, root: Node) -> Context:
+		var context = Context.new()
+		context.tree = runner
+		context.root = root
+		context._runner = runner
+		return context
+
+	func instantiate(path: String):
+		return self._runner.instantiate(path)
+
+	func waitUntil(predicate: Callable, timeoutMs: int) -> bool:
+		return await self._runner.waitUntil(predicate, timeoutMs)
 
 class Expectation extends RefCounted:
 	var _runner
